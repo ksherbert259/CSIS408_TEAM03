@@ -1,7 +1,7 @@
-Liberty University
-CSIS 408 - Team 03
+Liberty University CSIS 408 - Team 03
+---
 
-Team Bently
+Team Bentley
 ==================
 Jameson Volgantz
 
