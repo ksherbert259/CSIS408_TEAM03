@@ -6,11 +6,18 @@
   <link rel="stylesheet" href="css/main.css">
   <style></style>
   <body>
-    <canvas id="xGAME" class="canvas" width="600" height="600" style="border:1px solid #000;">
-      If you are seeing this message, you may have canvas elements turned off! This game requires these elements to be enabled!
-    </canvas>
+    <div class="wrap" style="width: 1500px; height: 800px;">
+      <canvas id="xCANVAS" width="1500" height="800"></canvas>
+      <div id="xROW0" class="gameoverlay"></div>
+      <div id="xROW1" class="gameoverlay"></div>
+      <div id="xROW2" class="gameoverlay"></div>
+      <div id="xROW3" class="gameoverlay"></div>
+      <div id="xROW4" class="gameoverlay"></div>
+    </div>
   </body>
+  <script src="js/board.js"></script>
+  <script src="js/attack.js"></script>
   <script src="js/defense.js"></script>
-  <script src="js/enemies.js"></script>
   <script src="js/main.js"></script>
+  <script>BeginGame();</script> <!-- do NOT keep. Temporary start game-->
 </html>

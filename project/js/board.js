@@ -54,4 +54,3 @@ function BeginGame()
   requestIdleCallback(MainLogic, { timeout: 250 });
   requestAnimationFrame(MainRender);
 }
-

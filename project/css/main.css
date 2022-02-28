@@ -1,3 +1,22 @@
-canvas {
-  background-color: #00AAFF20;
+body .wrap {
+  position: relative;
+  width: 1500px;
+  height: 800px;
+  /* background-color: #00AAFF20; */
+  border: 1px solid #000;
+}
+
+.wrap canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+div .gameoverlay {
+  background-color: #c0801190;
+  width: 100%;
+}
+
+div :not(:last-child) {
+  border-bottom: 1px solid #000000;
 }
