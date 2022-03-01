@@ -14,10 +14,51 @@
       <div id="xROW3" class="gameoverlay"></div>
       <div id="xROW4" class="gameoverlay"></div>
     </div>
+    <div class="below_bar">
+      <div class="currency">
+        <p id="xCURRENCY">500</p>
+      </div>
+      <div id="defense_options">
+        <div data-type="SOLDIER">
+          <img src="imgs/soldier.png">
+          <p>Soldier</p>
+          <p>Cost: <span class="defense_cost">25</span></p>
+          <p>Damage: <span class="defense_damage">1</span></p>
+          <p>FireRate: <span class="defense_rate">1</span></p>
+        </div>
+        <div data-type="ASSAULT">
+          <img src="imgs/assault.png">
+          <p class="defense_name">Assault</p>
+          <p>Cost: <span class="defense_cost">40</span></p>
+          <p>Damage: <span class="defense_damage">1.5</span></p>
+          <p>FireRate: <span class="defense_rate">1.4</span></p>
+        </div>
+        <div data-type="SNIPER">
+          <img src="imgs/sniper.png">
+          <p class="defense_name">Sniper</p>
+          <p>Cost: <span class="defense_cost">50</span></p>
+          <p>Damage: <span class="defense_damage">0.7</span></p>
+          <p>FireRate: <span class="defense_rate">1.4</span></p>
+        </div>
+        <div data-type="TANK">
+          <img src="imgs/tank.png">
+          <p>Tank</p>
+          <p>Cost: <span class="defense_cost">50</span></p>
+          <p>Damage: <span class="defense_damage">37.5</span></p>
+          <p>FireRate: <span class="defense_rate">0.7</span></p>
+        </div>
+      </div>
+      <div>
+        <p>Score: <span id="xSCORE">0</span></p>
+      </div>
+      <div>
+        <button type="button" onclick="BeginGame(); this.classList='game_started'; return false;"><span>Begin Game</span></button>
+      </div>
+    </div>
   </body>
   <script src="js/board.js"></script>
   <script src="js/attack.js"></script>
   <script src="js/defense.js"></script>
+  <script src="js/mouse.js"></script>
   <script src="js/main.js"></script>
-  <script>BeginGame();</script> <!-- do NOT keep. Temporary start game-->
 </html>

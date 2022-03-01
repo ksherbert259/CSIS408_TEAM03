@@ -1,8 +1,12 @@
+p {
+  font-size: 22px;
+}
+
 body .wrap {
+  background-color: #c0801190;
   position: relative;
   width: 1500px;
   height: 800px;
-  /* background-color: #00AAFF20; */
   border: 1px solid #000;
 }
 
@@ -13,10 +17,87 @@ body .wrap {
 }
 
 div .gameoverlay {
-  background-color: #c0801190;
   width: 100%;
+  display: flex;
+  flex-direction: row;
 }
 
-div :not(:last-child) {
+body .wrap :not(:last-child) {
   border-bottom: 1px solid #000000;
+}
+
+.grid_block_right {
+  z-index: 9999;
+  border-right: 1px solid #00000055;
+  height: 100%;
+}
+
+.grid_block_right:hover {
+  background-color: #FFF5 !important;
+}
+
+.grid_block_right:last-child {
+  border-right: 0;
+}
+
+.invisible.grid_block_right {
+  border-right: 0px;
+}
+
+.below_bar {
+  display: flex;
+}
+
+.currency {
+  width: 100px;
+  height: 100px;
+  border: 1px solid #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px;
+}
+
+#xCURRENCY.currency_debt {
+  color: red;
+}
+
+#defense_options {
+  display: flex;
+  /* align-items: center;
+  justify-content: center; */
+  /* margin-top: 20px; */
+  /* margin: 20px; */
+}
+
+#defense_options > div {
+  margin: 20px;
+}
+
+img {
+  max-height: 100px;
+}
+
+button {
+  margin: 50px;
+  padding: 20px;
+  background-color: #007700;
+  border: 2px solid #000;
+  cursor: pointer;
+}
+
+button.game_started {
+  display:none;
+}
+
+button > span {
+  font-size: 27px;
+}
+
+button:hover {
+  background-color: #005500;
+}
+
+button:hover span {
+  color: #FFF;
 }

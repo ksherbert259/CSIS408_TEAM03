@@ -1,6 +1,6 @@
 var all_attackers = [];
 var addedLife = 0; // Incremented
-var baseSpeed = 0.05;
+var enemyspeed = 0.05;
 var att_width = 80;
 var att_height = 100;
 var maxLife = 100;
@@ -14,11 +14,12 @@ function DEFAULT(progress)
   this.life = this.maxLife + addedLife;
   this.x = canvas.width;
   this.y = canvas.height;
+  this.row = 0;
 }
 
 // Common Attacker Prototype
 DEFAULT.prototype.health = 100;
-DEFAULT.prototype.speed = baseSpeed;
+DEFAULT.prototype.speed = enemyspeed;
 DEFAULT.prototype.color = "#990000";
 DEFAULT.prototype.visor = "#00AAFF";
 
@@ -62,10 +63,12 @@ function checkForDead() {
 var CreateAttacker = () => {
   var attacker;
   var type = parseInt(Math.random() * 3);
-  var rect = game_rows[parseInt(Math.random() * 4)].getBoundingClientRect();
+  var row = parseInt(Math.random() * 4);
+  var rect = game_rows[row].getBoundingClientRect();
 
   attacker = new AttackTypes[type](0);
-  attacker.y = rect.bottom - att_height - wrapper.offsetTop - 10; // Get the selected row, remove the attacker height, remove the offset top, remove 10 (for good looks)
+  attacker.row = row;
+  attacker.y = rect.bottom - att_height - wrapper.offsetTop - 10;// Get the selected row, remove the attacker height, remove the offset top
   all_attackers.push(attacker);
 }
 
