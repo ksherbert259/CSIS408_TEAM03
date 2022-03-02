@@ -9,6 +9,7 @@ var game_rows = wrapper.querySelectorAll(".gameoverlay");
 var lastMove = null
 var addAttacker = 7 * 1000; // New attackers every 7 seconds
 var addCurrency = 1 * 1000; // Add default gold every 1 second
+var addBullet = 10 * 1000;
 var stopped = 0;
 
 var currentDefense = 0;
@@ -32,6 +33,7 @@ for(var cnt = 0; cnt < ttl_grids; cnt++)
 }
 
 // Create invisible grid lines for defense placement
+var game_row_rect = [];
 var div = document.createElement("div");
 div.className = "invisible grid_block_right";
 for(var row = 0; row < game_rows.length; row++)
@@ -43,4 +45,6 @@ for(var row = 0; row < game_rows.length; row++)
     div.dataset.end = grid_boxes[j] + inc_value;
     game_rows[row].appendChild(div.cloneNode());
   }
+
+  game_row_rect.push(game_rows[row].getBoundingClientRect());
 }

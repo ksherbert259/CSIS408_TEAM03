@@ -3,19 +3,28 @@ function UpdateDefenseStats()
 {
   var defense_options = document.getElementById("defense_options");
   var defense = null;
-  var cnt = 0;
-  for(cnt = 0; cnt < SoldierTypes.length; cnt++)
+  for(var cnt = 0; cnt < SoldierTypes.length; cnt++)
   {
     defense = defense_options.querySelector("[data-type=" + SoldierTypes[cnt].name + "]");
     defense.querySelector("img").src = "imgs/" + SoldierTypes[cnt].name.toLowerCase() + ".png";
     defense.querySelector(".defense_cost").innerText = parseFloat(SoldierTypes[cnt].prototype.cost);
     defense.querySelector(".defense_damage").innerText = parseFloat(SoldierTypes[cnt].prototype.damage);
-    defense.querySelector(".defense_rate").innerText = parseFloat(SoldierTypes[cnt].prototype.speed);
+    defense.querySelector(".defense_rate").innerText = parseFloat(SoldierTypes[cnt].prototype.displayRate);
 
     defense.addEventListener("mousedown", function(evt) { ChangeDefense(this.dataset.defense_idx); });
-    defense.dataset.hello = "HELLO + " + cnt;
     defense.dataset.defense_idx = cnt;
   }
+}
+
+function GameLost()
+{
+  // If the score is in the negatives, lose the game
+  if(parseInt(score_system.innerText) < 0)
+  {
+    alert("Sorry! The attackers made it past your defenses!");
+    window.location.reload();
+  }
+
 }
 
 MainRender = function() {
@@ -34,6 +43,12 @@ MainRender = function() {
     all_attackers[i].draw();
   }
 
+  // Draw all bullets
+  for(var i = 0, j = all_bullets.length; i < j; i++)
+  {
+    all_bullets[i].draw();
+  }
+
   // Set next animation frame to recursively run
   requestAnimationFrame(MainRender);
 };
@@ -44,24 +59,44 @@ MainLogic = function() {
 
   addAttacker -= t;
   if(addAttacker <= 0) {
-    CreateAttacker();
-    addAttacker = (stopped > 40) ? 10*1000 : 7.0*1000; // Vary the time an attacker is generated
+    CreateAttacker(stopped > 6);
+    stopped = (stopped > 6) ? 0 : stopped;
+    addAttacker = 7*1000 - Math.min(Math.floor(Math.random() * 7), stopped); // Incrementally spawn more enemies faster
   }
 
   for(var i = 0, j = all_attackers.length; i < j; i ++ ) {
-    //true if attacker scored
+    // true if attacker won row
     if(all_attackers[i].move(t)) {
-      // attackerPoints++;
-      // updateStats = true;
       all_attackers[i].life = 0;
       all_attackers.splice(i,1);
+      score_system.innerText = parseInt(score_system.innerText) - 1;
+      enemyspeed = Math.max(0.01, enemyspeed - 0.05)
+      i--;
+      j--;
+      GameLost();
+    }
+  }
+
+  addBullet -= t;
+  for(var i = 0, j = all_defenses.length; i < j; i++ )
+  {
+    all_defenses[i].findTarget();
+    all_defenses[i].fire(t);
+  }
+
+  for(var i = 0, j = all_bullets.length; i < j; i++)
+  {
+    all_bullets[i].move(t);
+    if(all_bullets[i].checkCollision())
+    {
+      all_bullets.splice(i,1);
       i--;
       j--;
     }
   }
 
   addCurrency -= t;
-  CheckCurrency(addCurrency)
+  CheckCurrency(addCurrency, 1)
 
   lastMove = new Date();
   requestIdleCallback(MainLogic, { timeout: 250 });
@@ -74,19 +109,17 @@ function BeginGame()
   requestAnimationFrame(MainRender);
 }
 
-function CheckCurrency(addition)
+function CheckCurrency(doit, doit_by)
 {
-  if(addition <= 0)
+  if(doit <= 0)
   {
-    currency.innerText = parseInt(currency.innerText) + 1;
+    currency.innerText = parseInt(currency.innerText) + doit_by;
     addCurrency = 1*1000;
   }
 
   // Mark the currency as indebt if below 0
   currency.classList = (parseInt(currency.innerText) < 0) ? 'currency_debt' : '';
-
 }
-
 
 // Ensure the defense stats are up to date when loaded
 UpdateDefenseStats();

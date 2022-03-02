@@ -1,22 +1,18 @@
 var all_defenses = [];
-var defense_speed = 1;
-
+var defense_speed = 1
 
 // Set SOLDIER progress increment
-function SOLDIER(x, y)
+function SOLDIER(x, y, idx)
 {
-  this.maxLife = 100;
-  this.damage = 25;
-  this.cost = 25;
-  // this.life = this.maxLife + addedLife;
   this.x = x;
   this.y = y - att_height - 10;
-  this.row = 0;
+  this.row = idx;
 }
 
 SOLDIER.prototype.cost = 25
 SOLDIER.prototype.damage = 25;
-SOLDIER.prototype.speed = defense_speed;
+SOLDIER.prototype.displayRate = defense_speed;
+SOLDIER.prototype.speed = 3;
 SOLDIER.prototype.name = "SOLDIER";
 SOLDIER.prototype.color = "#333";
 SOLDIER.prototype.visor = "#00AAFF";
@@ -43,19 +39,77 @@ SOLDIER.prototype.draw = function() {
 
   // Name background
   context.fillStyle = "#000";
-  context.fillRect(this.x, this.y - 45, att_width + 15, att_height / 3);
+  context.fillRect(this.x, this.y - 45, att_width, att_height / 3);
 
   // Name
   context.fillStyle = "#FFF";
-  context.font = "30px Arial";
+  context.font = "20px Arial";
   context.fillText(this.name.toLowerCase(), this.x + 5, this.y - att_height / 5);
 };
 
+SOLDIER.prototype.fire = function(t)
+{
+  this.speed -= 0.05;
+  if(this.target && this.speed <= 0)
+  {
+    all_bullets.push(new Bullet(this.x + (att_width * 1.5), this.y + (att_height / 2.1), this.target, this, this.damage));
+
+    // reset this objects speed to the prototypes
+    this.speed = this.constructor.prototype.speed;
+  }
+};
+
+// Verify the target is on the same row
+SOLDIER.prototype.SameRow = function(targ)
+{
+  return ((this.row === targ.row) && (this.x < targ.x));
+}
+
+// Find a valid target
+SOLDIER.prototype.findTarget = function()
+{
+  // Nullify if no targets available
+  if(all_attackers.length === 0) {
+    this.target = null;
+    return;
+  }
+
+  // If target is dead or moved behind defenses, nullify
+  if(this.target && (this.target.life <= 0 || !this.SameRow(this.target)))
+  {
+    this.target = null;
+  }
+
+  // Maintain target
+  if(this.target)
+  {
+    return;
+  }
+
+  //find all attackers in range
+  var available = all_attackers.filter(this.SameRow, this);
+  if(available.length > 0)
+  {
+    // Sniper may have collateral damage
+    if(this.name === "SNIPER")
+    {
+      console.log("available: SNIPER");
+    }
+
+    if(this.name === "TANK")
+    {
+      console.log("available: TANK");
+    }
+
+    this.target = available[0];
+  }
+};
+
 var CreateSoldier = (type) => {
-  type = (type === undefined) ? parseInt(Math.random() * 3) : type;
+  type = (type === undefined) ? Math.floor(Math.random() * SoldierTypes.length) : type;
 
   var soldier;
-  var row = parseInt(Math.random() * 4);
+  var row = Math.floor(Math.random() * game_rows.length);
   var rect = game_rows[row].getBoundingClientRect();
 
   soldier = new SoldierTypes[type](0);
@@ -65,29 +119,31 @@ var CreateSoldier = (type) => {
 }
 
 // Create ASSAULT defense
-var ASSAULT = function(x, y) {
-  SOLDIER.call(this, x, y);
+var ASSAULT = function(x, y, idx) {
+  SOLDIER.call(this, x, y, idx);
 };
 ASSAULT.prototype = Object.create(SOLDIER.prototype);
 ASSAULT.prototype.constructor = ASSAULT;
 ASSAULT.prototype.health = SOLDIER.prototype.health;
-ASSAULT.prototype.speed = SOLDIER.prototype.speed * 1.5;
-ASSAULT.prototype.damage = SOLDIER.prototype.damage * 0.7;
-ASSAULT.prototype.cost = 40;
+ASSAULT.prototype.displayRate = SOLDIER.prototype.displayRate * 2.3;
+ASSAULT.prototype.speed = SOLDIER.prototype.speed * 0.5;
+ASSAULT.prototype.damage = SOLDIER.prototype.damage * 0.5;
+ASSAULT.prototype.cost = 35;
 ASSAULT.prototype.name = "ASSAULT"
 ASSAULT.prototype.color = "#850";
 ASSAULT.prototype.visor = "#AAA";
 ASSAULT.prototype.gun = "#401";
 
 // Create SNIPER defense
-var SNIPER = function(x, y) {
-  SOLDIER.call(this, x, y);
+var SNIPER = function(x, y, idx) {
+  SOLDIER.call(this, x, y, idx);
 };
 SNIPER.prototype = Object.create(SOLDIER.prototype);
 SNIPER.prototype.constructor = SNIPER;
 SNIPER.prototype.health = SOLDIER.prototype.health;
-SNIPER.prototype.speed = SOLDIER.prototype.speed * 0.5;
-SNIPER.prototype.damage = SOLDIER.prototype.damage * 1.7;
+SNIPER.prototype.displayRate = SOLDIER.prototype.displayRate * 0.4;
+SNIPER.prototype.speed = SOLDIER.prototype.speed * 1.7;
+SNIPER.prototype.damage = SOLDIER.prototype.damage * 2;
 SNIPER.prototype.cost = 40;
 SNIPER.prototype.name = "SNIPER"
 SNIPER.prototype.color = "#088";
@@ -95,14 +151,15 @@ SNIPER.prototype.visor = "#BBB";
 SNIPER.prototype.gun = "#CCC";
 
 // Create TANK / Tank defense
-var TANK = function(x, y) {
-  SOLDIER.call(this, x, y);
+var TANK = function(x, y, idx) {
+  SOLDIER.call(this, x, y, idx);
 };
 TANK.prototype = Object.create(SOLDIER.prototype);
 TANK.prototype.constructor = TANK;
 TANK.prototype.health = SOLDIER.prototype.health * 1.5;
-TANK.prototype.speed = SOLDIER.prototype.speed * 0.7;
-TANK.prototype.damage = SOLDIER.prototype.damage * 2.5;
+TANK.prototype.displayRate = SOLDIER.prototype.displayRate * 0.2;
+TANK.prototype.speed = SOLDIER.prototype.speed * 2.7;
+TANK.prototype.damage = SOLDIER.prototype.damage * 4;
 TANK.prototype.cost = 50;
 TANK.prototype.name = "TANK";
 TANK.prototype.color = "#493";
