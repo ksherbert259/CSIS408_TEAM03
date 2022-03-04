@@ -19,12 +19,12 @@ function UpdateDefenseStats()
 function GameLost()
 {
   // If the score is in the negatives, lose the game
-  if(parseInt(score_system.innerText) < 0)
+  if(!alreadyLost && (parseInt(score_system.innerText) < 0))
   {
-    alert("Sorry! The attackers made it past your defenses!");
-    window.location.reload();
+    alreadyLost = true;
+    alert("Sorry! The attackers made it past your defenses!\nYour score was dropped below 0 to " + score_system.innerText + "\nYou had " + currency.innerText + " gold before your demise!");
+    alert("You may continue playing. Refresh this window to restart your game!");
   }
-
 }
 
 MainRender = function() {
@@ -68,9 +68,9 @@ MainLogic = function() {
     // true if attacker won row
     if(all_attackers[i].move(t)) {
       all_attackers[i].life = 0;
-      all_attackers.splice(i,1);
-      score_system.innerText = parseInt(score_system.innerText) - 1;
+      score_system.innerText = parseInt(score_system.innerText) - all_attackers[i].scoreval * 3;
       enemyspeed = Math.max(0.01, enemyspeed - 0.05)
+      all_attackers.splice(i,1);
       i--;
       j--;
       GameLost();
@@ -109,12 +109,12 @@ function BeginGame()
   requestAnimationFrame(MainRender);
 }
 
-function CheckCurrency(doit, doit_by)
+function CheckCurrency(dontdoit, doit_by)
 {
-  if(doit <= 0)
+  if(dontdoit <= 0)
   {
     currency.innerText = parseInt(currency.innerText) + doit_by;
-    addCurrency = 1*1000;
+    addCurrency = 1 * 1000; // Reset currency timer
   }
 
   // Mark the currency as indebt if below 0

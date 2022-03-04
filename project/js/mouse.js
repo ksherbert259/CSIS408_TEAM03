@@ -1,7 +1,16 @@
 function ChangeDefense(idx)
 {
-  console.log("hello -idx " + idx + " -currentDefense " + currentDefense);
-  currentDefense = idx;
+  currentDefense = Math.max(0, Math.min(SoldierTypes.length, idx));
+
+  var defense_options = document.getElementById("defense_options");
+  var previous = defense_options.querySelector("div.current_selected");
+  if(previous)
+  {
+    previous.classList = "";
+  }
+  var selected = defense_options.querySelector("div[data-type=" + SoldierTypes[currentDefense].name + "]");
+  selected.classList = "current_selected";
+
 }
 
 function PurchaseDefense(defense_idx)
@@ -35,7 +44,6 @@ function addSoldier(evt)
   if(PurchaseDefense(currentDefense))
   {
     all_defenses.push(new SoldierTypes[currentDefense](rect.left, rect.bottom, idx));
-    currency.innerText = parseInt(currency.innerText) - SoldierTypes[currentDefense].prototype.cost;
   }
 }
 wrapper.addEventListener("click", addSoldier, false);

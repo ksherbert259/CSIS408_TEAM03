@@ -9,9 +9,10 @@ function SOLDIER(x, y, idx)
   this.row = idx;
 }
 
-SOLDIER.prototype.cost = 25
+SOLDIER.prototype.cost = 25;
 SOLDIER.prototype.damage = 25;
 SOLDIER.prototype.displayRate = defense_speed;
+SOLDIER.secondarytargs = [];
 SOLDIER.prototype.speed = 3;
 SOLDIER.prototype.name = "SOLDIER";
 SOLDIER.prototype.color = "#333";
@@ -52,7 +53,8 @@ SOLDIER.prototype.fire = function(t)
   this.speed -= 0.05;
   if(this.target && this.speed <= 0)
   {
-    all_bullets.push(new Bullet(this.x + (att_width * 1.5), this.y + (att_height / 2.1), this.target, this, this.damage));
+    var critshot = (Math.floor(Math.random() * 10) > 8);
+    all_bullets.push(new Bullet(this.x + (att_width * 1.5), this.y + (att_height / 2.1), this.target, this, this.damage, critshot));
 
     // reset this objects speed to the prototypes
     this.speed = this.constructor.prototype.speed;
@@ -65,9 +67,33 @@ SOLDIER.prototype.SameRow = function(targ)
   return ((this.row === targ.row) && (this.x < targ.x));
 }
 
+// Verify there are targets nearby, above or below
+SOLDIER.prototype.SameRadius = function(targ)
+{
+  const radius = 3;
+  var available = false;
+  for(var cnt = 0; cnt < all_attackers.length; cnt++)
+  {
+    if((all_attackers[cnt].row > this.row - 1) && (all_attackers[cnt].row < this.row + 1))
+    {
+      if((all_attackers[cnt].x < targ.x + (inc_value * radius)) && (all_attackers[cnt].x > targ.x - (inc_value * radius)))
+      {
+        if(targ !== all_attackers[cnt])
+        {
+          available = true;
+        }
+      }
+    }
+  }
+
+  return available;
+}
+
 // Find a valid target
 SOLDIER.prototype.findTarget = function()
 {
+  var secondarytargs = [];
+
   // Nullify if no targets available
   if(all_attackers.length === 0) {
     this.target = null;
@@ -80,37 +106,57 @@ SOLDIER.prototype.findTarget = function()
     this.target = null;
   }
 
-  // Maintain target
-  if(this.target)
-  {
-    return;
-  }
-
   //find all attackers in range
   var available = all_attackers.filter(this.SameRow, this);
+  if(this.name === "TANK")
+  {
+    available = all_attackers.filter(this.SameRadius, this);
+  }
+
+  // If attackers are found, find target
   if(available.length > 0)
   {
-    // Sniper may have collateral damage
-    if(this.name === "SNIPER")
+    if((this.name === "SNIPER") || (this.name === "TANK"))
     {
-      console.log("available: SNIPER");
+      secondarytargs = available;
+    }
+    else
+    {
+      secondarytargs = [];
     }
 
-    if(this.name === "TANK")
+    var distance = wrapper.clientWidth;
+    var idx = 0;
+    for(var cnt = 0; cnt < available.length; cnt++)
     {
-      console.log("available: TANK");
+      minimum = Math.min(distance, available[cnt].x);
+      if(minimum !== distance)
+      {
+        distance = minimum;
+        idx = cnt;
+      }
     }
 
-    this.target = available[0];
+    // Chose the closest target available (faster attackers may pass slower attackers)
+    this.target = available[idx];
+
+    // Remove duplicate targets
+    if((secondarytargs.length > idx) && (this.target === secondarytargs[idx]))
+    {
+      secondarytargs.splice(idx, 1);
+    }
   }
+
+  // Mark secondary targets if applicable
+  this.secondarytargs = secondarytargs;
 };
 
 var CreateSoldier = (type) => {
   type = (type === undefined) ? Math.floor(Math.random() * SoldierTypes.length) : type;
 
   var soldier;
-  var row = Math.floor(Math.random() * game_rows.length);
-  var rect = game_rows[row].getBoundingClientRect();
+  var row = Math.floor(Math.random() * game_row_rect.length);
+  var rect = game_row_rect[row];
 
   soldier = new SoldierTypes[type](0);
   soldier.row = row;
@@ -127,7 +173,7 @@ ASSAULT.prototype.constructor = ASSAULT;
 ASSAULT.prototype.health = SOLDIER.prototype.health;
 ASSAULT.prototype.displayRate = SOLDIER.prototype.displayRate * 2.3;
 ASSAULT.prototype.speed = SOLDIER.prototype.speed * 0.5;
-ASSAULT.prototype.damage = SOLDIER.prototype.damage * 0.5;
+ASSAULT.prototype.damage = SOLDIER.prototype.damage * 0.9;
 ASSAULT.prototype.cost = 35;
 ASSAULT.prototype.name = "ASSAULT"
 ASSAULT.prototype.color = "#850";
@@ -144,7 +190,7 @@ SNIPER.prototype.health = SOLDIER.prototype.health;
 SNIPER.prototype.displayRate = SOLDIER.prototype.displayRate * 0.4;
 SNIPER.prototype.speed = SOLDIER.prototype.speed * 1.7;
 SNIPER.prototype.damage = SOLDIER.prototype.damage * 2;
-SNIPER.prototype.cost = 40;
+SNIPER.prototype.cost = 70;
 SNIPER.prototype.name = "SNIPER"
 SNIPER.prototype.color = "#088";
 SNIPER.prototype.visor = "#BBB";
@@ -160,7 +206,7 @@ TANK.prototype.health = SOLDIER.prototype.health * 1.5;
 TANK.prototype.displayRate = SOLDIER.prototype.displayRate * 0.2;
 TANK.prototype.speed = SOLDIER.prototype.speed * 2.7;
 TANK.prototype.damage = SOLDIER.prototype.damage * 4;
-TANK.prototype.cost = 50;
+TANK.prototype.cost = 150;
 TANK.prototype.name = "TANK";
 TANK.prototype.color = "#493";
 TANK.prototype.visor = "#FFF";

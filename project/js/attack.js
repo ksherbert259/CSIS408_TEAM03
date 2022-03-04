@@ -1,6 +1,7 @@
 var all_attackers = [];
 var addedLife = 0; // Incremented
 var maxLife = 100;
+var addedLife = 0;
 var enemyspeed = 0.1;
 var att_width = 80;
 var att_height = 100;
@@ -16,6 +17,7 @@ function DEFAULT(progress)
 }
 
 // Common Attacker Prototype
+DEFAULT.prototype.scoreval = 5;
 DEFAULT.prototype.health = 100;
 DEFAULT.prototype.speed = 0.1;
 DEFAULT.prototype.name = "Susser";
@@ -39,8 +41,8 @@ DEFAULT.prototype.draw = function() {
   context.fillRect(this.x, this.y - 30, att_width, att_height / 4);
 
   // Health bar
-  context.fillStyle = (this.boss && this.life > maxLife * 1.5) ? "#444" : "#F00";
-  context.fillRect(this.x, this.y - 25, att_width + ((this.boss) ? (this.life % maxLife) : this.life - maxLife), att_height / 6);
+  context.fillStyle = (this.boss && (this.life + addedLife) > maxLife) ? "#444" : "#F00";
+  context.fillRect(this.x, this.y - 25, att_width - Math.min(att_width, Math.max(0, att_width * ((this.life + addedLife) / (addedLife + maxLife)))), att_height / 6);
 
   if(this.boss)
   {
@@ -65,34 +67,37 @@ function checkForDead() {
   {
     if(all_attackers[cnt].life <= 0) // Check if attacker is dead
     {
-      CheckCurrency(1, (all_attackers[cnt].boss) ? 75 : 25);
+      CheckCurrency(0, (all_attackers[cnt].boss) ? all_attackers[cnt].scoreval * 4 : all_attackers[cnt].scoreval);
       stopped = parseFloat(stopped) + 0.1;
       enemyspeed += 0.001;
+      addedLife += 1;
+      score_system.innerText = parseInt(score_system.innerText) + all_attackers[cnt].scoreval;
       all_attackers.splice(cnt, 1);
       cnt--;
       max--;
-      currency.innerText = parseInt(currency.innerText) + 25;
-      score_system.innerText = parseInt(score_system.innerText) + 1;
     }
   }
 }
 
-var CreateAttacker = (createBoss) => {
+var CreateAttacker = (createBoss, selectrow) =>
+{
   var attacker;
   var type = Math.floor(Math.random() * AttackTypes.length);
-  var row = Math.floor(Math.random() * game_rows.length);
+  var row = (selectrow === undefined) ? Math.floor(Math.random() * game_rows.length) : selectrow;
   var rect = game_row_rect[row];
 
   attacker = new AttackTypes[type](0);
   attacker.row = row;
   attacker.boss = createBoss;
+  attacker.scoreval = (createBoss) ? attacker.scoreval * 2 : attacker.scoreval;
   attacker.life = (createBoss) ? attacker.life * 4 : attacker.life;
-  attacker.speed = attacker.speed + enemyspeed
-  attacker.y = rect.bottom - att_height - wrapper.offsetTop - 10;// Get the selected row, remove the attacker height, remove the offset top
+  attacker.life += addedLife;
+  attacker.speed = (createBoss) ? (attacker.speed * 0.6) : attacker.speed + enemyspeed;
+  attacker.y = rect.bottom - att_height - wrapper.offsetTop - 10; // Get the selected row, remove the attacker height, remove the offset top
   all_attackers.push(attacker);
 
   // Create other enemies in different locations at different times if not a boss
-  for(var cnt = 0, recurse = Math.floor(Math.random() * 5) + 1; cnt < recurse && !createBoss; cnt++)
+  for(var cnt = 0, recurse = Math.floor(Math.random() * 3) + Math.floor(stopped); cnt < recurse && !createBoss; cnt++)
   {
     setTimeout(RandomizeAttacker, Math.floor(Math.random() * 4) * 1000);
   }
@@ -101,12 +106,13 @@ var CreateAttacker = (createBoss) => {
 var RandomizeAttacker = () =>
 {
   var attacker = new AttackTypes[Math.floor(Math.random() * AttackTypes.length)](0);
-  var row = Math.floor(Math.random() * game_rows.length);
+  var row = Math.floor(Math.random() * game_row_rect.length);
   var rect = game_row_rect[row];
 
   attacker.row = row;
   attacker.boss = false;
-  attacker.speed = attacker.speed + enemyspeed
+  attacker.speed = attacker.speed + enemyspeed;
+  attacker.life += addedLife;
   attacker.y = rect.bottom - att_height - wrapper.offsetTop - (Math.random() * 20);
   all_attackers.push(attacker);
 }
@@ -119,6 +125,7 @@ FAST.prototype = Object.create(DEFAULT.prototype);
 FAST.prototype.constructor = FAST;
 FAST.prototype.health = DEFAULT.prototype.health * 0.7;
 FAST.prototype.speed = DEFAULT.prototype.speed * 1.2;
+FAST.prototype.scoreval = 2;
 FAST.prototype.name = "Speed Susser";
 FAST.prototype.color = "#950";
 FAST.prototype.visor = "#977";
@@ -131,6 +138,7 @@ STRONG.prototype = Object.create(DEFAULT.prototype);
 STRONG.prototype.constructor = STRONG;
 STRONG.prototype.health = DEFAULT.prototype.health * 1.2;
 STRONG.prototype.speed = DEFAULT.prototype.speed * 0.7;
+STRONG.prototype.scoreval = DEFAULT.prototype.scoreval * 1.2;
 STRONG.prototype.name = "Big Susser";
 STRONG.prototype.color = "#550000";
 STRONG.prototype.visor = "#555";

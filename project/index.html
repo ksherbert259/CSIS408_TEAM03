@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="css/main.css">
   <style></style>
   <body>
-    <div class="wrap" style="width: 1500px; height: 800px;">
+    <div class="wrap">
       <canvas id="xCANVAS" width="1500" height="800"></canvas>
       <div id="xROW0" class="gameoverlay"></div>
       <div id="xROW1" class="gameoverlay"></div>
@@ -16,10 +16,10 @@
     </div>
     <div class="below_bar">
       <div class="currency">
-        <p id="xCURRENCY">500</p>
+        <p id="xCURRENCY">75</p>
       </div>
       <div id="defense_options">
-        <div data-type="SOLDIER">
+        <div data-type="SOLDIER" class="current_selected">
           <img src="imgs/soldier.png">
           <p>Soldier</p>
           <p>Cost: <span class="defense_cost">25</span></p>
@@ -28,22 +28,22 @@
         </div>
         <div data-type="ASSAULT">
           <img src="imgs/assault.png">
-          <p class="defense_name">Assault</p>
-          <p>Cost: <span class="defense_cost">40</span></p>
+          <p class="defense_name">Assault - FireRate</p>
+          <p>Cost: <span class="defense_cost">35</span></p>
           <p>Damage: <span class="defense_damage">1.5</span></p>
           <p>FireRate: <span class="defense_rate">1.4</span></p>
         </div>
         <div data-type="SNIPER">
           <img src="imgs/sniper.png">
-          <p class="defense_name">Sniper</p>
+          <p class="defense_name">Sniper - Richochet</p>
           <p>Cost: <span class="defense_cost">50</span></p>
           <p>Damage: <span class="defense_damage">0.7</span></p>
           <p>FireRate: <span class="defense_rate">1.4</span></p>
         </div>
         <div data-type="TANK">
           <img src="imgs/tank.png">
-          <p>Tank</p>
-          <p>Cost: <span class="defense_cost">50</span></p>
+          <p>Tank - Explosions</p>
+          <p>Cost: <span class="defense_cost">150</span></p>
           <p>Damage: <span class="defense_damage">37.5</span></p>
           <p>FireRate: <span class="defense_rate">0.7</span></p>
         </div>
@@ -58,8 +58,8 @@
   </body>
   <script src="js/board.js"></script>
   <script src="js/attack.js"></script>
-  <script src="js/shoot.js"></script>
   <script src="js/defense.js"></script>
+  <script src="js/shoot.js"></script>
   <script src="js/mouse.js"></script>
   <script src="js/main.js"></script>
 </html>

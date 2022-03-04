@@ -11,13 +11,14 @@ var addAttacker = 7 * 1000; // New attackers every 7 seconds
 var addCurrency = 1 * 1000; // Add default gold every 1 second
 var addBullet = 10 * 1000;
 var stopped = 0;
+var alreadyLost = false;
 
 var currentDefense = 0;
 
 var score_system = document.getElementById("xSCORE");
 var currency = document.getElementById("xCURRENCY");
 
-const row_height = (canvas.height / game_rows.length);
+const row_height = (canvas.clientHeight / game_rows.length);
 for(var cnt = 0; cnt < game_rows.length; cnt++)
 {
   game_rows[cnt].style.height = (row_height - 1) + "px";
@@ -25,7 +26,7 @@ for(var cnt = 0; cnt < game_rows.length; cnt++)
 
 // Find and calculate all grid widths
 const ttl_grids = 15;
-const inc_value = (canvas.width / ttl_grids);
+const inc_value = (canvas.clientWidth / ttl_grids);
 var grid_boxes = [];
 for(var cnt = 0; cnt < ttl_grids; cnt++)
 {

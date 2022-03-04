@@ -16,6 +16,12 @@ body .wrap {
   left: 0;
 }
 
+body .wrap,
+.wrap canvas {
+  width: 1500px;
+  height: 800px;
+}
+
 div .gameoverlay {
   width: 100%;
   display: flex;
@@ -70,6 +76,11 @@ body .wrap :not(:last-child) {
   padding: 10px;
   border: 1px solid #000;
   cursor: pointer;
+}
+
+#defense_options > div.current_selected {
+  border: 1px solid red;
+  background-color: #CCCC;
 }
 
 img {
